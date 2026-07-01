@@ -2,15 +2,15 @@ import cv2
 import numpy as np
 
 # 读取两个图片
-template_path = 'is_have_empty.png'
-screenshot = cv2.imread('screenshot.png')
+template_path = '../picture/is_have_empty.png'
+screenshot = cv2.imread('../screenshot.png')
 template = cv2.imread(template_path)
 
 print(f"截图尺寸: {screenshot.shape}")
 print(f"模板尺寸: {template.shape}")
 
 # 转灰度匹配
-screen_gray = cv2.imread('screenshot.png', 0)
+screen_gray = cv2.imread('../screenshot.png', 0)
 template_gray = cv2.imread(template_path, 0)
 
 res = cv2.matchTemplate(screen_gray, template_gray, cv2.TM_CCOEFF_NORMED)
