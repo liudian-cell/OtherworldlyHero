@@ -6,20 +6,31 @@ import time
 from device_utils import safe_click, click_blank, screenshot
 from image_utils import find_image, wait_for_image, wait_for_image_gone, wait_for_any_image
 
+# 难度对应的图片文件名后缀映射
+DIFFICULTY_SUFFIX = {
+    "默认": "",
+    "普通": "_normal",
+    "英雄": "_hero",
+    "史诗": "_epic",
+}
 
-def start_game(device, button_pos):
+
+def start_game(device, button_pos, config):
     """
     遍历 job 目录下的图片，匹配并点击，然后点击开始战斗按钮
 
     Args:
         device: uiautomator2 设备对象
         button_pos: 开始战斗按钮的坐标 (x, y)
+        config: 英雄配置字典 {英雄名: {区域名: 难度}}
     """
     job_dir = 'picture/job'
     files = os.listdir(job_dir)
-    index = 7
+    index = 0
     while index < len(files):
         filename = files[index]
+        hero_name = os.path.splitext(filename)[0]
+        hero_config = config.get(hero_name, {})
         template_path = os.path.join(job_dir, filename)
         screenshot(device)
         match_pos = find_image(template_path, 'screenshot.png')
@@ -34,7 +45,7 @@ def start_game(device, button_pos):
             print(f"点击了开始战斗按钮，坐标：({x}, {y})")
 
             # 进入战斗
-            if job_war(device):
+            if job_war(device, hero_config):
                 index += 1  # 成功才继续下一个
                 print("当前角色所有副本已通关，找到设置按钮并点击")
             else:
@@ -62,12 +73,13 @@ def start_game(device, button_pos):
             return
 
 
-def job_war(device):
+def job_war(device, hero_config):
     """
-    战斗流程：选择区域 → 选择副本 → 自动战斗 → 卖装备
+    战斗流程：选择区域 → 选择副本难度 → 自动战斗 → 卖装备
 
     Args:
         device: uiautomator2 设备对象
+        hero_config: 当前英雄的区域配置 {区域名: 难度}
 
     Returns:
         bool: 战斗流程是否成功
@@ -86,12 +98,14 @@ def job_war(device):
 
     while area_index < len(area_files):
         area_filename = area_files[area_index]
+        area_name = os.path.splitext(area_filename)[0]
         area_path = os.path.join(area_dir, area_filename)
+        difficulty = hero_config.get(area_name, "默认")
 
         if not _select_dungeon(device, area_path, area_filename):
             return False
 
-        match_pos = wait_for_any_image(device, ['free1.png', 'free1.png'], 2, 0.5)
+        match_pos = wait_for_any_image(device, ['picture/free1.png', 'picture/free1.png'], 2, 0.5)
         if match_pos is None:
             print("未找到免费副本，切换到下一个区域")
             area_index += 1
@@ -100,6 +114,10 @@ def job_war(device):
 
         x, y = int(match_pos[0]), int(match_pos[1])
         safe_click(device, x, y)
+
+        # 根据配置选择难度
+        if not _select_difficulty(device, difficulty):
+            return False
 
         if not _start_dungeon_battle(device):
             return False
@@ -120,6 +138,34 @@ def job_war(device):
         print("点击空地两次")
         click_blank(device)
 
+    return True
+
+
+def _select_difficulty(device, difficulty):
+    """
+    根据配置的难度选择对应难度按钮
+
+    Args:
+        device: uiautomator2 设备对象
+        difficulty: 难度名称（默认/普通/英雄/史诗）
+
+    Returns:
+        bool: 选择成功返回 True，"默认"跳过返回 True，找不到按钮返回 False
+    """
+    if difficulty == "默认":
+        print(f"难度为默认，跳过难度选择")
+        return True
+
+    suffix = DIFFICULTY_SUFFIX.get(difficulty, "")
+    difficulty_img = f'picture/difficulty{suffix}.png'
+    print(f"选择难度: {difficulty}，匹配图片: {difficulty_img}")
+    match_pos = wait_for_image(device, difficulty_img, 10, 0.5)
+    if match_pos is None:
+        print(f"未找到难度按钮图片: {difficulty_img}")
+        return False
+    x, y = int(match_pos[0]), int(match_pos[1])
+    safe_click(device, x, y)
+    print(f"点击了难度按钮 {difficulty}，坐标：({x}, {y})")
     return True
 
 
