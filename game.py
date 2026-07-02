@@ -111,13 +111,12 @@ def job_war(device, hero_config):
             area_index += 1
             click_blank(device)
             continue
+        # 根据配置选择难度
+        select_difficulty(device, difficulty)
 
+        #点击正式开始战斗
         x, y = int(match_pos[0]), int(match_pos[1])
         safe_click(device, x, y)
-
-        # 根据配置选择难度
-        if not _select_difficulty(device, difficulty):
-            return False
 
         if not _start_dungeon_battle(device):
             return False
@@ -141,7 +140,7 @@ def job_war(device, hero_config):
     return True
 
 
-def _select_difficulty(device, difficulty):
+def select_difficulty(device, difficulty):
     """
     根据配置的难度选择对应难度按钮
 
@@ -154,19 +153,40 @@ def _select_difficulty(device, difficulty):
     """
     if difficulty == "默认":
         print(f"难度为默认，跳过难度选择")
-        return True
+        return
 
-    suffix = DIFFICULTY_SUFFIX.get(difficulty, "")
-    difficulty_img = f'picture/difficulty{suffix}.png'
+    print(f"先判断当前的难度是否是期望的难度")
+    # 默认图片为普通
+    difficulty_img = 'picture/difficulty/Ordinary.png'
+    difficulty_select = 'picture/difficulty/select_ordinary.png'
+    if difficulty == "英雄":
+        difficulty_img = 'picture/difficulty/Hero.png'
+        difficulty_select = 'picture/difficulty/select_hero.png'
+    elif difficulty == "史诗":
+        difficulty_img = 'picture/difficulty/Epic.png'
+        difficulty_select = 'picture/difficulty/select_epic.png'
+
     print(f"选择难度: {difficulty}，匹配图片: {difficulty_img}")
-    match_pos = wait_for_image(device, difficulty_img, 10, 0.5)
+    match_pos = wait_for_image(device, difficulty_img, 1, 0.5)
+    if match_pos is not None:
+        print(f"当前难度不需要重新选择")
+        return
+
+    match_pos = wait_for_image(device, 'picture/difficulty/select.png', 10, 0.5, 0.6)
     if match_pos is None:
-        print(f"未找到难度按钮图片: {difficulty_img}")
-        return False
+        print("未找到选择按钮")
+        return
+    x, y = int(match_pos[0]), int(match_pos[1])
+    safe_click(device, x, y)
+
+    match_pos = wait_for_image(device, difficulty_select, 10, 0.5, 0.6)
+    if match_pos is None:
+        print("未找到难度按钮")
+        return
     x, y = int(match_pos[0]), int(match_pos[1])
     safe_click(device, x, y)
     print(f"点击了难度按钮 {difficulty}，坐标：({x}, {y})")
-    return True
+    return
 
 
 def _select_dungeon(device, area_path, area_filename):
