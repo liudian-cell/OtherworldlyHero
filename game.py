@@ -102,6 +102,11 @@ def job_war(device, hero_config):
         area_path = os.path.join(area_dir, area_filename)
         difficulty = hero_config.get(area_name, "默认")
 
+        if difficulty == "关闭":
+            print(f"区域 {area_name} 已设置为关闭，跳过")
+            area_index += 1
+            continue
+
         if not _select_dungeon(device, area_path, area_filename):
             return False
 
