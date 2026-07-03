@@ -105,18 +105,19 @@ def job_war(device, hero_config):
         if not _select_dungeon(device, area_path, area_filename):
             return False
 
-        match_pos = wait_for_any_image(device, ['picture/free1.png', 'picture/free1.png'], 2, 0.5)
+        match_pos = wait_for_any_image(device, ['picture/free1.png', 'picture/free2.png'], 2, 0.5)
         if match_pos is None:
             print("未找到免费副本，切换到下一个区域")
             area_index += 1
             click_blank(device)
             continue
-        # 根据配置选择难度
-        select_difficulty(device, difficulty)
 
-        #点击正式开始战斗
+        print("点击一个免费区域")
         x, y = int(match_pos[0]), int(match_pos[1])
         safe_click(device, x, y)
+
+        # 根据配置选择难度
+        select_difficulty(device, difficulty)
 
         if not _start_dungeon_battle(device):
             return False
@@ -171,15 +172,17 @@ def select_difficulty(device, difficulty):
     if match_pos is not None:
         print(f"当前难度不需要重新选择")
         return
-
-    match_pos = wait_for_image(device, 'picture/difficulty/select.png', 10, 0.5, 0.6)
+    print(f"重新选择难度")
+    print(f"先找到难度选择按钮")
+    match_pos = wait_for_image(device, 'picture/difficulty/select.png', 2, 0.5, 0.6)
     if match_pos is None:
         print("未找到选择按钮")
         return
     x, y = int(match_pos[0]), int(match_pos[1])
+    print("点击难度选择按钮")
     safe_click(device, x, y)
-
-    match_pos = wait_for_image(device, difficulty_select, 10, 0.5, 0.6)
+    print("找到对应的难度图标")
+    match_pos = wait_for_image(device, difficulty_select, 1, 0.5, 0.6)
     if match_pos is None:
         print("未找到难度按钮")
         return

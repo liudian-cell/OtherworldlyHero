@@ -52,7 +52,7 @@ def wait_for_image(device, template_path, max_attempts=20, interval=0.5, thresho
         print(f"第 {attempt + 1}/{max_attempts} 次尝试未匹配到图片，等待 {interval} 秒后重试...")
         time.sleep(interval)
 
-    print(f"已尝试 {max_attempts} 次，仍未匹配到图片，返回失败")
+    print(f"已尝试 {max_attempts} 次，仍未匹配到图片")
     return None
 
 
