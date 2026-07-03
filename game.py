@@ -174,7 +174,7 @@ def select_difficulty(device, difficulty):
         return
     print(f"重新选择难度")
     print(f"先找到难度选择按钮")
-    match_pos = wait_for_image(device, 'picture/difficulty/select.png', 2, 0.5, 0.6)
+    match_pos = wait_for_image(device, 'picture/difficulty/select.png', 2, 0.5,0.95)
     if match_pos is None:
         print("未找到选择按钮")
         return
