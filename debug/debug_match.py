@@ -2,15 +2,15 @@ import cv2
 import numpy as np
 
 # 读取两个图片
-template_path = '../picture/is_have_empty.png'
-screenshot = cv2.imread('../screenshot.png')
+template_path = 'picture/difficulty/select.png'
+screenshot = cv2.imread('screenshot.png')
 template = cv2.imread(template_path)
 
 print(f"截图尺寸: {screenshot.shape}")
 print(f"模板尺寸: {template.shape}")
 
 # 转灰度匹配
-screen_gray = cv2.imread('../screenshot.png', 0)
+screen_gray = cv2.imread('screenshot.png', 0)
 template_gray = cv2.imread(template_path, 0)
 
 res = cv2.matchTemplate(screen_gray, template_gray, cv2.TM_CCOEFF_NORMED)
@@ -32,5 +32,5 @@ h, w = template_gray.shape
 top_left = max_loc
 bottom_right = (top_left[0] + w, top_left[1] + h)
 cv2.rectangle(screenshot, top_left, bottom_right, (0, 255, 0), 2)
-cv2.imwrite('match_result.png', screenshot)
+cv2.imwrite('debug/match_result.png', screenshot)
 print(f"\n已保存匹配结果到 match_result.png（绿色框为最佳匹配位置）")

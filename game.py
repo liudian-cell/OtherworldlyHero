@@ -128,20 +128,18 @@ def job_war(device, hero_config):
             return False
 
         # 等待自动战斗结束
-        print("开始战斗副本后等待10s")
-        time.sleep(10)
-        print("等待自动按钮消失，等待500s")
-        wait_for_image_gone(device, 'picture/Auto_battle.png', 300, 2, 0.6)
-        print("自动按钮消失后再等待5s")
-        time.sleep(3)
-
+        print("开始战斗副本后开始售卖装备")
         # 卖装备
         if not _sell_items(device):
             # 卖装备失败不算战斗失败，继续循环
             pass
-
         print("点击空地两次")
         click_blank(device)
+        print("装备买完了")
+        print("等待自动按钮消失，等待500s")
+        wait_for_image_gone(device, 'picture/Auto_battle.png', 300, 2, 0.6)
+        print("自动按钮消失后再等待3s")
+        time.sleep(3)
 
     return True
 
