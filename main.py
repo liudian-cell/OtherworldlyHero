@@ -9,11 +9,14 @@ from tkinter import messagebox, ttk
 from device_utils import connect_device, screenshot
 from image_utils import find_image
 from game import start_game
-
-CONFIG_PATH = "hero_config.json"
-DIFFICULTY_OPTIONS = ["默认", "普通", "英雄", "史诗"]
-JOB_DIR = "picture/job"
-AREA_DIR = "picture/area"
+from settings import (
+    CONFIG_PATH,
+    DIFFICULTY_OPTIONS,
+    JOB_DIR,
+    AREA_DIR,
+    HERO_NAME_MAP,
+    SCREENSHOT_PATH,
+)
 
 
 def load_config():
@@ -73,7 +76,7 @@ def show_start_gui(config):
 
     for hero in heroes:
         tab = tk.Frame(notebook)
-        notebook.add(tab, text=hero)
+        notebook.add(tab, text=HERO_NAME_MAP.get(hero, hero))
 
         # 表头
         tk.Label(tab, text="区域", font=("Microsoft YaHei", 9, "bold"), width=10,
@@ -157,9 +160,8 @@ def show_start_gui(config):
 
 
 def main():
-    # 1. 连接设备（假设设备已通过adb连接）
-    # 如果是模拟器，地址可能是 '127.0.0.1:7555' (MuMu模拟器默认端口)
-    d = connect_device("127.0.0.1:7555")
+    # 1. 连接设备
+    d = connect_device()
 
     # 2. 加载英雄配置并显示 GUI
     config = load_config()
@@ -172,7 +174,7 @@ def main():
     screenshot(d)
 
     # 4. 寻找游戏中的"开始战斗"按钮
-    button_pos = find_image('picture/start_game.png', 'screenshot.png')
+    button_pos = find_image('picture/start_game.png', SCREENSHOT_PATH)
     if button_pos:
         start_game(d, button_pos, config)
     else:
