@@ -47,7 +47,10 @@ def start_game(device, button_pos, config):
             # 进入战斗
             if job_war(device, hero_config):
                 index += 1  # 成功才继续下一个
-                print("当前角色所有副本已通关，找到设置按钮并点击")
+                print("当前角色所有副本已通关，")
+                print("点击空地两次")
+                click_blank(device)
+                print("找到设置按钮并点击")
             else:
                 print(f"job_war 执行失败，重试当前 template_path: {filename}")
                 print("等待20s")

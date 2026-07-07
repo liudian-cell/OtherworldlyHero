@@ -1,0 +1,12 @@
+{
+    "name": "异世界勇者",
+    "main": "main.js",
+    "ignore": [
+        "../picture/screenshot2.png",
+        "../picture/screenshot.png",
+        "../screenshot.png"
+    ],
+    "packageName": "com.otherworldlyhero.auto",
+    "versionName": "1.0.0",
+    "versionCode": 1
+}
